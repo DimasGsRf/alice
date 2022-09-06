@@ -3,6 +3,7 @@ import 'package:alice/helper/alice_conversion_helper.dart';
 import 'package:alice/model/alice_http_call.dart';
 import 'package:alice/utils/alice_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AliceStatsScreen extends StatelessWidget {
   final AliceCore aliceCore;
@@ -97,10 +98,10 @@ class AliceStatsScreen extends StatelessWidget {
   }
 
   int _getTotalRequests() {
-    return calls.length;
+    return calls!.length;
   }
 
-  int _getSuccessRequests() => calls
+  int _getSuccessRequests() => calls!
       .where(
         (call) =>
             call.response != null &&
@@ -110,7 +111,7 @@ class AliceStatsScreen extends StatelessWidget {
       .toList()
       .length;
 
-  int _getRedirectionRequests() => calls
+  int _getRedirectionRequests() => calls!
       .where(
         (call) =>
             call.response != null &&
@@ -120,7 +121,7 @@ class AliceStatsScreen extends StatelessWidget {
       .toList()
       .length;
 
-  int _getErrorRequests() => calls
+  int _getErrorRequests() => calls!
       .where(
         (call) =>
             call.response != null &&
@@ -131,11 +132,11 @@ class AliceStatsScreen extends StatelessWidget {
       .length;
 
   int _getPendingRequests() =>
-      calls.where((call) => call.loading).toList().length;
+      calls!.where((call) => call.loading).toList().length;
 
   int _getBytesSent() {
     int bytes = 0;
-    calls.forEach((AliceHttpCall call) {
+    calls!.forEach((AliceHttpCall call) {
       bytes += call.request!.size;
     });
     return bytes;
@@ -143,7 +144,7 @@ class AliceStatsScreen extends StatelessWidget {
 
   int _getBytesReceived() {
     int bytes = 0;
-    calls.forEach((AliceHttpCall call) {
+    calls!.forEach((AliceHttpCall call) {
       if (call.response != null) {
         bytes += call.response!.size;
       }
@@ -154,7 +155,7 @@ class AliceStatsScreen extends StatelessWidget {
   int _getAverageRequestTime() {
     int requestTimeSum = 0;
     int requestsWithDurationCount = 0;
-    calls.forEach((AliceHttpCall call) {
+    calls!.forEach((AliceHttpCall call) {
       if (call.duration != 0) {
         requestTimeSum = call.duration;
         requestsWithDurationCount++;
@@ -168,7 +169,7 @@ class AliceStatsScreen extends StatelessWidget {
 
   int _getMaxRequestTime() {
     int maxRequestTime = 0;
-    calls.forEach((AliceHttpCall call) {
+    calls!.forEach((AliceHttpCall call) {
       if (call.duration > maxRequestTime) {
         maxRequestTime = call.duration;
       }
@@ -178,10 +179,10 @@ class AliceStatsScreen extends StatelessWidget {
 
   int _getMinRequestTime() {
     int minRequestTime = 10000000;
-    if (calls.isEmpty) {
+    if (calls!.isEmpty) {
       minRequestTime = 0;
     } else {
-      calls.forEach((AliceHttpCall call) {
+      calls!.forEach((AliceHttpCall call) {
         if (call.duration != 0 && call.duration < minRequestTime) {
           minRequestTime = call.duration;
         }
@@ -191,13 +192,13 @@ class AliceStatsScreen extends StatelessWidget {
   }
 
   int _getRequests(String requestType) =>
-      calls.where((call) => call.method == requestType).toList().length;
+      calls!.where((call) => call.method == requestType).toList().length;
 
   int _getSecuredRequests() =>
-      calls.where((call) => call.secure).toList().length;
+      calls!.where((call) => call.secure).toList().length;
 
   int _getUnsecuredRequests() =>
-      calls.where((call) => !call.secure).toList().length;
+      calls!.where((call) => !call.secure).toList().length;
 
-  List<AliceHttpCall> get calls => aliceCore.callsSubject.value;
+  List<AliceHttpCall>? get calls => aliceCore.callsSubject.value;
 }
