@@ -103,7 +103,7 @@ class AliceCore {
   }
 
   void _onCallsChanged() async {
-    if (callsSubject.value.isNotEmpty) {
+    if (callsSubject.value!.isNotEmpty) {
       _notificationMessage = _getNotificationMessage();
       if (_notificationMessage != _notificationMessageShown &&
           !_notificationProcessing) {
@@ -144,7 +144,7 @@ class AliceCore {
   BuildContext? getContext() => navigatorKey?.currentState?.overlay?.context;
 
   String _getNotificationMessage() {
-    final List<AliceHttpCall> calls = callsSubject.value;
+    final List<AliceHttpCall> calls = callsSubject.value!;
     final int successCalls = calls
         .where(
           (call) =>
@@ -227,7 +227,7 @@ class AliceCore {
     final String? message = _notificationMessage;
     await _flutterLocalNotificationsPlugin.show(
       0,
-      "Alice (total: ${callsSubject.value.length} requests)",
+      "Alice (total: ${callsSubject.value!.length} requests)",
       message,
       platformChannelSpecifics,
       payload: "",
@@ -239,9 +239,9 @@ class AliceCore {
 
   /// Add alice http call to calls subject
   void addCall(AliceHttpCall call) {
-    final callsCount = callsSubject.value.length;
+    final callsCount = callsSubject.value!.length;
     if (callsCount >= maxCallsCount) {
-      final originalCalls = callsSubject.value;
+      final originalCalls = callsSubject.value!;
       final calls = List<AliceHttpCall>.from(originalCalls);
       calls.sort(
         (call1, call2) => call1.createdTime.compareTo(call2.createdTime),
@@ -251,7 +251,7 @@ class AliceCore {
 
       callsSubject.add(originalCalls);
     } else {
-      callsSubject.add([...callsSubject.value, call]);
+      callsSubject.add([...callsSubject.value!, call]);
     }
   }
 
@@ -265,7 +265,7 @@ class AliceCore {
     }
 
     selectedCall.error = error;
-    callsSubject.add([...callsSubject.value]);
+    callsSubject.add([...callsSubject.value!]);
   }
 
   /// Add response to existing alice http call
@@ -281,14 +281,14 @@ class AliceCore {
     selectedCall.duration = response.time.millisecondsSinceEpoch -
         selectedCall.request!.time.millisecondsSinceEpoch;
 
-    callsSubject.add([...callsSubject.value]);
+    callsSubject.add([...callsSubject.value!]);
   }
 
   /// Add alice http call to calls subject
   void addHttpCall(AliceHttpCall aliceHttpCall) {
     assert(aliceHttpCall.request != null, "Http call request can't be null");
     assert(aliceHttpCall.response != null, "Http call response can't be null");
-    callsSubject.add([...callsSubject.value, aliceHttpCall]);
+    callsSubject.add([...callsSubject.value!, aliceHttpCall]);
   }
 
   /// Remove all calls from calls subject
@@ -297,10 +297,10 @@ class AliceCore {
   }
 
   AliceHttpCall? _selectCall(int requestId) =>
-      callsSubject.value.firstWhereOrNull((call) => call.id == requestId);
+      callsSubject.value!.firstWhereOrNull((call) => call.id == requestId);
 
   /// Save all calls to file
   void saveHttpRequests(BuildContext context) {
-    AliceSaveHelper.saveCalls(context, callsSubject.value, _brightness);
+    AliceSaveHelper.saveCalls(context, callsSubject.value!, _brightness);
   }
 }
